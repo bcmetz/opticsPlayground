@@ -9,7 +9,7 @@ var mouseY=pix_height_center;
 
 var mm2pix = 10;
 var sphereSegs = 200;
-var RayTraceIterations=10;
+var RayTraceIterations=20;
 var minRayMag = 0.05;
 var raf;
 
@@ -576,7 +576,7 @@ window.addEventListener('keydown', function(e) {
 
 
 	// Cancel the default action to avoid it being handled twice
-	e.preventDefault();
+	//e.preventDefault();
 }, true);
 
 canvas.addEventListener('mousemove', function(e) {
@@ -602,7 +602,46 @@ canvas.addEventListener('mouseout', function(e) {
 
 //var ray = new Ray(-10, 10, -Math.PI/2, 1, 'white', rays);
 
+function addOptic() {
+    var type, x, y, wr, h, q, index, ref, abs;
+    var text;
+    type = document.getElementById("type").value;
+    x = parseFloat(document.getElementById("x_pos").value);
+    y = parseFloat(document.getElementById("y_pos").value);
+    wr = parseFloat(document.getElementById("wide_rad").value);
+    h = parseFloat(document.getElementById("height").value);
+    q = parseFloat(document.getElementById("rotation").value)*Math.PI/180;
+    index = parseFloat(document.getElementById("index").value);
+    ref = parseFloat(document.getElementById("reflection").value);
+    abs = parseFloat(document.getElementById("absorption").value);
 
+    switch(type) {
+        case "sphere":
+            var rect1 = new OpticSphere(x, y, wr, h, q, index, ref, abs);
+            text = "Added Sphere Optic"
+        break;
+        case "rect":
+            var rect1 = new OpticRect(x, y, wr, h, q, index, ref, abs);
+            text = "Added Rect Optic"
+
+        break;
+        case "flat":
+            var fold1 = new OpticFlat(x, y, h, q, index, ref, abs);
+            text = "Added Fold Optic"
+        break;
+        default:
+            text = "No case found"
+    }
+
+    document.getElementById("output").innerHTML = text;
+}
+
+function reset() {
+
+    optic = [];
+    text = "Optical elements cleared"
+    document.getElementById("output").innerHTML = text;
+}
 
 draw();
 //var ret = fold.RayIntersect(ray);

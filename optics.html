@@ -1,8 +1,32 @@
 <!DOCTYPE html>
 <html>
 <body>
+<div id="canvas_div_no_cursor">
+    <canvas id="canvas" width="1024" height="480"></canvas>
+</div>
+<script type="text/javascript">
+  document.getElementById('canvas_div_no_cursor').style.cursor = "none";
+</script>
+<br>
+<select id="type">
+  <option value="sphere">Sphere Optic</option>
+  <option value="rect">Rect Optic</option>
+  <option value="flat">Fold Optic</option>
+</select> <br>
+X[mm]:<input type="text" id="x_pos" value="0.0"/><br>
+Y[mm]:<input type="text" id="y_pos"value="0.0"/><br>
+Width/Radius[mm]:<input type="text" id="wide_rad" value="10.0"/><br>
+Height[mm]:<input type="text" id="height" value="10.0"/><br>
+Rotation[deg]:<input type="text" id="rotation" value="0.0"/><br>
+Index:<input type="text" id="index" value="1"/><br>
+Reflection:<input type="text" id="reflection" value="0.5"/><br>
+Absorption:<input type="text" id="absorption" value="0.0"/><br>
 
-<canvas id="canvas" width="800" height="600"></canvas>
+<button onclick="addOptic()">Add New</button> 
+<button id="update">Update</button>
+<button onclick="reset()">Reset</button>
+<br>
+<p id="output"></p>
 
 <script defer src="./victor.js"></script>
 <script defer src="./optics.js"></script>
