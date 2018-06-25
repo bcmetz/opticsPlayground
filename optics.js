@@ -268,6 +268,7 @@ class Ray{
 
 class OpticSphere{
 	constructor(x, y, radius, height, rot, index, reflect, absorb){
+		this.type = "Sphere"
 		this.x = x;
 		this.y = y;
 		this.radius = radius;
@@ -292,8 +293,14 @@ class OpticSphere{
 			this.height = height;
 		}
 
-		this.q_start = -Math.asin(this.height/2/radius) + rot;
-		this.q_end = Math.asin(this.height/2/radius) + rot;
+		this.updatePts();
+		
+		optic.push(this)
+	}
+
+	updatePts(){
+		this.q_start = -Math.asin(this.height/2/this.radius) + this.rot;
+		this.q_end = Math.asin(this.height/2/this.radius) + this.rot;
 
 		var dq = (this.q_start - this.q_end)/this.seg;
 		this.pts=[];
@@ -305,7 +312,7 @@ class OpticSphere{
 		this.xmax=-1e30;
 
 		for(var i=0; i<=this.seg; i=i+1){
-			this.pts[i] = new Point(radius*Math.cos(i*dq-this.q_start)+this.x, radius*Math.sin(i*dq-this.q_start)+this.y);
+			this.pts[i] = new Point(this.radius*Math.cos(i*dq-this.q_start)+this.x, this.radius*Math.sin(i*dq-this.q_start)+this.y);
 			if(this.pts[i].x < this.xmin) {
 				this.xmin = this.pts[i].x;
 			}
@@ -318,14 +325,12 @@ class OpticSphere{
 			if(this.pts[i].y > this.ymax) {
 				this.ymax = this.pts[i].y;
 			}
-		}
-		optic.push(this)
+		}	
 	}
-
 	draw(){
 		ctx.strokeStyle = rgb(0,0,0);
 		ctx.beginPath();
-		ctx.arc((this.x*mm2pix)+pix_width_center, (this.y*mm2pix)+pix_height_center, this.radius*mm2pix, this.q_end, this.q_start, true);
+		ctx.arc((this.x*mm2pix)+pix_width_center, (-this.y*mm2pix)+pix_height_center, this.radius*mm2pix, this.q_end, this.q_start, true);
 		ctx.lineStyle = this.color;
 		ctx.stroke();
 
@@ -391,10 +396,11 @@ class OpticSphere{
 }
 
 class OpticRect{
-	constructor(x, y, length, width, rot, index, reflect, absorb){
+	constructor(x, y, width, height, rot, index, reflect, absorb){
+		this.type = "Rect"
 		this.x=x;
 		this.y=y;
-		this.length=length;
+		this.height=height;
 		this.width=width;
 		this.rot=rot;
 
@@ -407,24 +413,26 @@ class OpticRect{
 		//New ray reflect amplitude = (ray.amp*(1-absorb))*reflect
 		//New ray transmitted amplitude = (ray.amp*(1-absorb))*(1-reflect)
 
-		this.pts=[];
-
-		var vec = new Victor((-width/2),(-length/2))
-		vec.rotate(rot);
-		this.pts[0] = new Point(vec.x+x, vec.y+y);
-		vec = new Victor((width/2),(-length/2))
-		vec.rotate(rot);
-		this.pts[1] = new Point(vec.x+x, vec.y+y);
-		vec = new Victor((width/2),(length/2))
-		vec.rotate(rot);
-		this.pts[2] = new Point(vec.x+x, vec.y+y);
-		vec = new Victor((-width/2),(length/2))
-		vec.rotate(rot);
-		this.pts[3] = new Point(vec.x+x, vec.y+y);
+		this.updatePts();
 
 		optic.push(this)
 	}
+	updatePts(){
+		this.pts=[];
 
+		var vec = new Victor((-this.width/2),(-this.height/2))
+		vec.rotate(this.rot);
+		this.pts[0] = new Point(vec.x+this.x, vec.y+this.y);
+		vec = new Victor((this.width/2),(-this.height/2))
+		vec.rotate(this.rot);
+		this.pts[1] = new Point(vec.x+this.x, vec.y+this.y);
+		vec = new Victor((this.width/2),(this.height/2))
+		vec.rotate(this.rot);
+		this.pts[2] = new Point(vec.x+this.x, vec.y+this.y);
+		vec = new Victor((-this.width/2),(this.height/2))
+		vec.rotate(this.rot);
+		this.pts[3] = new Point(vec.x+this.x, vec.y+this.y);	
+	}
 	draw(){
 		for(var i=0; i<=3; i=i+1){
             ctx.beginPath();
@@ -463,10 +471,11 @@ class OpticRect{
 }
 
 class OpticFlat{
-	constructor(x, y, length, rot, index, reflect, absorb){
+	constructor(x, y, height, rot, index, reflect, absorb){
+		this.type = "Fold"
 		this.x=x;
 		this.y=y;
-		this.length=length;
+		this.height=height;
 		this.rot=rot;
 
 		//Related to new rays genereated
@@ -478,16 +487,19 @@ class OpticFlat{
 		//New ray reflect amplitude = (ray.amp*(1-absorb))*reflect
 		//New ray transmitted amplitude = (ray.amp*(1-absorb))*(1-reflect)
 
+		this.updatePts();
+		
+        optic.push(this)
+	}
+	updatePts(){
 		this.pts=[];
 
-		var vec = new Victor(0, (-length/2))
-		vec.rotate(rot);
-		this.pts[0] = new Point(vec.x+x, vec.y+y);
-		vec = new Victor(0,(length/2))
-		vec.rotate(rot);
-		this.pts[1] = new Point(vec.x+x, vec.y+y);
-
-        optic.push(this)
+		var vec = new Victor(0, (-this.height/2))
+		vec.rotate(this.rot);
+		this.pts[0] = new Point(vec.x+this.x, vec.y+this.y);
+		vec = new Victor(0,(this.height/2))
+		vec.rotate(this.rot);
+		this.pts[1] = new Point(vec.x+this.x, vec.y+this.y);
 	}
 
 	draw(){
@@ -632,17 +644,111 @@ function addOptic() {
         default:
             text = "No case found"
     }
-
+	UpdateOpticList();
     document.getElementById("output").innerHTML = text;
 }
 
 function reset() {
-
     optic = [];
     text = "Optical elements cleared"
     document.getElementById("output").innerHTML = text;
+	UpdateOpticList(); 	
 }
 
+function UpdateOpticList(){
+	var x; 
+    var option;
+	
+	document.getElementById("opticSelect").innerHTML="";
+	
+	for(var i=0; i<optic.length; i=i+1){
+		x = document.getElementById("opticSelect");
+		option = document.createElement("option");
+	    option.text = optic[i].type + "; X:" + String(optic[i].x) + "; Y:" + String(optic[i].y)
+		x.add(option);	
+	}
+}
+
+function selectOptic() {
+	
+	var optIndex = parseInt(document.getElementById("opticSelect").selectedIndex);
+    document.getElementById("output").innerHTML = "Select Changed to " + String(optIndex);
+	
+    document.getElementById("x_pos").value = String(optic[optIndex].x);
+	document.getElementById("y_pos").value = String(optic[optIndex].y);
+	
+	document.getElementById("height").value = String(optic[optIndex].height)
+	document.getElementById("rotation").value = String(optic[optIndex].rot*180/Math.PI);
+	document.getElementById("index").value = String(optic[optIndex].index)
+	document.getElementById("reflection").value = String(optic[optIndex].reflect)
+	document.getElementById("absorption").value = String(optic[optIndex].absorb)
+	
+	switch(optic[optIndex].type) {
+		case "Sphere":
+			document.getElementById("type").selectedIndex = "0"
+			document.getElementById("wide_rad").value = String(optic[optIndex].radius);
+			break;
+		case "Rect":
+			document.getElementById("type").selectedIndex = "1"
+			document.getElementById("wide_rad").value = String(optic[optIndex].width);
+			break;
+		case "Fold":
+			document.getElementById("type").selectedIndex = "2"
+			document.getElementById("wide_rad").value = "0.0"
+			break;
+	}
+}
+
+function updateOptic(){
+	var x, y, wr, h, q, index, ref, abs;
+	var optIndex = parseInt(document.getElementById("opticSelect").selectedIndex);
+	
+	x = parseFloat(document.getElementById("x_pos").value);
+    y = parseFloat(document.getElementById("y_pos").value);
+    wr = parseFloat(document.getElementById("wide_rad").value);
+    h = parseFloat(document.getElementById("height").value);
+    q = parseFloat(document.getElementById("rotation").value)*Math.PI/180;
+    index = parseFloat(document.getElementById("index").value);
+    ref = parseFloat(document.getElementById("reflection").value);
+    abs = parseFloat(document.getElementById("absorption").value);
+
+	switch(optic[optIndex].type) {
+		case "Sphere":
+			optic[optIndex].x = x;
+			optic[optIndex].y = y;
+			optic[optIndex].radius = wr;
+			optic[optIndex].height = h;
+			optic[optIndex].rot = q;
+			optic[optIndex].index = index;
+			optic[optIndex].reflect = ref;
+			optic[optIndex].absorb = abs;
+			optic[optIndex].updatePts();
+			break;
+		case "Rect":
+			optic[optIndex].x = x;
+			optic[optIndex].y = y;
+			optic[optIndex].width = wr;
+			optic[optIndex].height = h;
+			optic[optIndex].rot = q;
+			optic[optIndex].index = index;
+			optic[optIndex].reflect = ref;
+			optic[optIndex].absorb = abs;
+			optic[optIndex].updatePts();
+			break;
+		case "Fold":
+			optic[optIndex].x = x;
+			optic[optIndex].y = y;
+			optic[optIndex].height = h;
+			optic[optIndex].rot = q;
+			optic[optIndex].index = index;
+			optic[optIndex].reflect = ref;
+			optic[optIndex].absorb = abs;
+			optic[optIndex].updatePts();
+			break;
+	}
+}
+
+UpdateOpticList();
 draw();
 //var ret = fold.RayIntersect(ray);
 //console.log(ret.segment.horizontalAngleDeg())

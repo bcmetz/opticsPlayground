@@ -7,7 +7,7 @@
 <script type="text/javascript">
   document.getElementById('canvas_div_no_cursor').style.cursor = "none";
 </script>
-<br>
+<p id="output"></p>
 <select id="type">
   <option value="sphere">Sphere Optic</option>
   <option value="rect">Rect Optic</option>
@@ -23,10 +23,17 @@ Reflection:<input type="text" id="reflection" value="0.5"/><br>
 Absorption:<input type="text" id="absorption" value="0.0"/><br>
 
 <button onclick="addOptic()">Add New</button> 
-<button id="update">Update</button>
+<button onclick="updateOptic()">Update</button>
 <button onclick="reset()">Reset</button>
+
+<br><br>
+<form>
+  <select id="opticSelect" onchange="selectOptic()" size="10">
+  </select>
+</form>
+
 <br>
-<p id="output"></p>
+
 
 <script defer src="./victor.js"></script>
 <script defer src="./optics.js"></script>
