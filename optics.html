@@ -2,7 +2,7 @@
 <html>
 <body>
 <div id="canvas_div_no_cursor">
-    <canvas id="canvas" width="1024" height="480"></canvas>
+    <canvas id="canvas" width="1024" height="480" style="border:1px solid #000000;"></canvas>
 </div>
 <script type="text/javascript">
   document.getElementById('canvas_div_no_cursor').style.cursor = "none";
@@ -24,7 +24,8 @@ Absorption:<input type="text" id="absorption" value="0.0"/><br>
 
 <button onclick="addOptic()">Add New</button> 
 <button onclick="updateOptic()">Update</button>
-<button onclick="reset()">Reset</button>
+<button onclick="removeOptic()">Remove</button>
+<button onclick="reset()">Clear All</button>
 
 <br><br>
 <form>

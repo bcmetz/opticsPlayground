@@ -303,6 +303,9 @@ class OpticSphere{
 		this.q_end = Math.asin(this.height/2/this.radius) + this.rot;
 
 		var dq = (this.q_start - this.q_end)/this.seg;
+		this.dx = this.x - this.radius*Math.cos(this.rot);
+		this.dy = this.y + this.radius*Math.sin(this.rot);
+		
 		this.pts=[];
 
 		//Bounding box for optic
@@ -312,7 +315,7 @@ class OpticSphere{
 		this.xmax=-1e30;
 
 		for(var i=0; i<=this.seg; i=i+1){
-			this.pts[i] = new Point(this.radius*Math.cos(i*dq-this.q_start)+this.x, this.radius*Math.sin(i*dq-this.q_start)+this.y);
+			this.pts[i] = new Point(this.radius*Math.cos(i*dq-this.q_start)+this.dx, this.radius*Math.sin(i*dq-this.q_start)+this.dy);
 			if(this.pts[i].x < this.xmin) {
 				this.xmin = this.pts[i].x;
 			}
@@ -330,7 +333,7 @@ class OpticSphere{
 	draw(){
 		ctx.strokeStyle = rgb(0,0,0);
 		ctx.beginPath();
-		ctx.arc((this.x*mm2pix)+pix_width_center, (-this.y*mm2pix)+pix_height_center, this.radius*mm2pix, this.q_end, this.q_start, true);
+		ctx.arc((this.dx*mm2pix)+pix_width_center, (-this.dy*mm2pix)+pix_height_center, this.radius*mm2pix, this.q_end, this.q_start, true);
 		ctx.lineStyle = this.color;
 		ctx.stroke();
 
@@ -648,6 +651,14 @@ function addOptic() {
     document.getElementById("output").innerHTML = text;
 }
 
+function removeOptic(){
+	var optIndex = parseInt(document.getElementById("opticSelect").selectedIndex);
+	if (optIndex > -1) {
+		optic.splice(optIndex, 1);
+	}
+	UpdateOpticList(); 	
+}
+
 function reset() {
     optic = [];
     text = "Optical elements cleared"
@@ -672,7 +683,7 @@ function UpdateOpticList(){
 function selectOptic() {
 	
 	var optIndex = parseInt(document.getElementById("opticSelect").selectedIndex);
-    document.getElementById("output").innerHTML = "Select Changed to " + String(optIndex);
+    //document.getElementById("output").innerHTML = "Select Changed to " + String(optIndex);
 	
     document.getElementById("x_pos").value = String(optic[optIndex].x);
 	document.getElementById("y_pos").value = String(optic[optIndex].y);
@@ -746,6 +757,8 @@ function updateOptic(){
 			optic[optIndex].updatePts();
 			break;
 	}
+	UpdateOpticList();
+
 }
 
 UpdateOpticList();
