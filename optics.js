@@ -51,8 +51,9 @@ function rayTrace(){
 				var beta = -1*minRet.segment.verticalAngle();
 				console.log('alpha, beta before');
 				console.log(alpha, beta);
-				//if(alpha > Math.PI/2) { alpha = alpha - Math.PI; }
-				//if(alpha < -Math.PI/2) { alpha = alpha + Math.PI; }
+				
+				if(alpha > Math.PI) { alpha = alpha - 2*Math.PI; }
+				if(alpha < -Math.PI) { alpha = 2*Math.PI + alpha; }
 
 				if(beta > Math.PI/2) { beta = beta - Math.PI; }
 				if(beta < -Math.PI/2) { beta = beta + Math.PI; }
@@ -61,7 +62,7 @@ function rayTrace(){
 				var q2_crit = n1/n2*Math.sin(q1);
 				var q2 = Math.asin(n1/n2*Math.sin(q1));
 
-				if(q1 > Math.PI/2 || q1 < -Math.PI/2)
+				if( q1 > Math.PI/2 || q1 < -Math.PI/2)
 				{
 					q2 = q2 - Math.PI;
 					var nu = (beta-q2);
@@ -555,9 +556,9 @@ var fold4 = new OpticFlat(0, -20, 20, Math.PI/2, 1, 1, 1);
 
 
 var ray = new Ray(-25, 5, 0, 1,'white', rays);
-var ray = new Ray(-25, 2.5, 0, 1, 'white', rays);
-var ray = new Ray(-25, 0, 0, 1, 'white', rays);
-var ray = new Ray(-25, -2.5, 0, 1, 'white', rays);
+var ray = new Ray(-25, 2.5, Math.PI/2, 1, 'white', rays);
+var ray = new Ray(-25, 0, Math.PI, 1, 'white', rays);
+var ray = new Ray(-25, -2.5, 3*Math.PI/2, 1, 'white', rays);
 var ray = new Ray(-25, -5, 0, 1, 'white', rays);
 
 
