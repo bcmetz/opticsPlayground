@@ -556,9 +556,9 @@ var fold4 = new OpticFlat(0, -20, 20, Math.PI/2, 1, 1, 1);
 
 
 var ray = new Ray(-25, 5, 0, 1,'white', rays);
-var ray = new Ray(-25, 2.5, Math.PI/2, 1, 'white', rays);
-var ray = new Ray(-25, 0, Math.PI, 1, 'white', rays);
-var ray = new Ray(-25, -2.5, 3*Math.PI/2, 1, 'white', rays);
+var ray = new Ray(-25, 2.5, 0, 1, 'white', rays);
+var ray = new Ray(-25, 0, 0, 1, 'white', rays);
+var ray = new Ray(-25, -2.5, 0, 1, 'white', rays);
 var ray = new Ray(-25, -5, 0, 1, 'white', rays);
 
 
